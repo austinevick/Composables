@@ -9,7 +9,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheetDefaults
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,13 +31,13 @@ fun CustomModalBottomSheet(
 ) {
 
     val predictiveBackProgress = remember { Animatable(initialValue = 0f) }
+    var valueLevel by remember { mutableIntStateOf(0) }
 
     CustomBottomSheetDialog(
         onDismissRequest = onDismissRequest,
         properties = properties,
         predictiveBackProgress = predictiveBackProgress
     ) {
-
 
         Box(
             contentAlignment = Alignment.BottomCenter,
@@ -46,6 +49,12 @@ fun CustomModalBottomSheet(
             )
             CustomModalSheetContent(
                 modifier = modifier,
+                onValueChange = { delta ->
+                    valueLevel = (valueLevel + delta).coerceIn(0, 100)
+                    if (valueLevel == 0) {
+                        onDismissRequest()
+                    }
+                },
                 shape = shape,
                 contentWindowInsets = contentWindowInsets
             ) {
